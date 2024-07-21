@@ -47,7 +47,7 @@ class GameRunner
             $this->remainingTicks--;
             sleep($this->tickInterval);
 
-            $this->gameWorld->OnBeforeRender($is_first_tick, $is_last_tick);
+            $this->gameWorld->OnAfterRender($is_first_tick, $is_last_tick);
         }
 
         $this->running = false;
