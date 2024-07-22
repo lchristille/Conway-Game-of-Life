@@ -6,7 +6,7 @@ class GameRunner
 {
     private int $remainingTicks = 10;
     private int $totalTicks = 10;
-    private int $tickInterval = 1;
+    private int $tickIntervalInMs = 1000;
     private bool $running = false;
     private IGameWorld $gameWorld;
 
@@ -28,6 +28,11 @@ class GameRunner
         }
     }
 
+    public function SetTickInterval(int $tickIntervalInMs): void
+    {
+        $this->tickIntervalInMs = $tickIntervalInMs;
+    }
+
     public function Run(): void
     {
         $this->running = true;
@@ -36,7 +41,10 @@ class GameRunner
             $is_first_tick = $this->remainingTicks == $this->totalTicks;
             $is_last_tick = $this->remainingTicks == 1;
 
-            $this->gameWorld->OnTick();
+            if (!$is_first_tick) {
+                $this->gameWorld->OnTick();
+            }
+
 
             $this->gameWorld->OnBeforeRender($is_first_tick, $is_last_tick);
 
@@ -45,7 +53,7 @@ class GameRunner
 
             // actions to be executed after tick
             $this->remainingTicks--;
-            sleep($this->tickInterval);
+            usleep($this->tickIntervalInMs);
 
             $this->gameWorld->OnAfterRender($is_first_tick, $is_last_tick);
         }
