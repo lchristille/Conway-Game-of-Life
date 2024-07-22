@@ -4,23 +4,20 @@ require_once dirname(__FILE__) . '/../abstractions/IGameWorld.php';
 require_once dirname(__FILE__) . '/DeadCell.php';
 require_once dirname(__FILE__) . '/LiveCell.php';
 
-class LifeWorld implements IGameWorld
+class EmptyWorld implements IGameWorld
 {
-    private array $state;
-    private int $height = 6;
-    private int $width = 6;
+    protected array $state = [[]];
+    private int $height = 0;
+    private int $width = 0;
 
-    public function __construct(?array $state = null)
+    public function __construct(?array $state = null, ?int $height = null, ?int $width = null)
     {
+        $this->height = $height ?? 6;
+        $this->width = $width ?? 6;
         if ($state === null) {
             for ($h = 0; $h < $this->height; $h++) {
                 for ($w = 0; $w < $this->width; $w++) {
-                    $random = random_int(0, 1);
-                    if ($random == 0) {
-                        $this->state[$h][$w] = new DeadCell();
-                    } else {
-                        $this->state[$h][$w] = new LiveCell();
-                    }
+                    $this->state[$h][$w] = new DeadCell();
                 }
             }
         } else {
@@ -50,15 +47,18 @@ class LifeWorld implements IGameWorld
         return $next_state;
     }
 
-    public function CountNeighbours(int $x, int $y): int
+    public function CountNeighbours(int $y, int $x): int
     {
         $result = 0;
 
-        for ($count_x = $x - 1; $count_x <= $x + 1; $count_x++) {
-            for ($count_y = $y - 1; $count_y <= $y + 1; $count_y++) {
-                if ($count_x > 0 && $count_y > 0 && $count_x < $this->width && $count_y < $this->height) {
-                    if ($count_x != $x && $count_y != $y) {
-                        $result += $this->state[$count_y][$count_x] ? 1 : 0;
+        for ($count_y = $y - 1; $count_y <= $y + 1; $count_y++) {
+            if ($count_y > 0 && $count_y < $this->height) {
+                for ($count_x = $x - 1; $count_x <= $x + 1; $count_x++) {
+                    if ($count_x > 0 && $count_x < $this->width) {
+                        if ($count_x == $x && $count_y == $y) {
+                            continue;
+                        }
+                        $result += $this->state[$count_y][$count_x] instanceof LiveCell ? 1 : 0;
                     }
                 }
             }
