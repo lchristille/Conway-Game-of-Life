@@ -53,9 +53,13 @@ class GameRunner
 
             // actions to be executed after tick
             $this->remainingTicks--;
-            usleep($this->tickIntervalInMs);
+            usleep($this->tickIntervalInMs * 1000);
 
             $this->gameWorld->OnAfterRender($is_first_tick, $is_last_tick);
+
+            if ($is_last_tick) {
+                echo "Run Completed!" . PHP_EOL . "Total ticks were " . $this->totalTicks . PHP_EOL . "The time between ticks was " . $this->tickIntervalInMs . "ms." . PHP_EOL;
+            }
         }
 
         $this->running = false;
